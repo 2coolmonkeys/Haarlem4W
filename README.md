@@ -26,6 +26,7 @@ Enkele quick start punten:
 
 ### Open Data Geo tools
 
+* [Wat is RD, en hoe kom je er vanaf] (https://github.com/2coolmonkeys/Haarlem4W/wiki/RD-(Rijksdriehoeksmeting))
 * [Download Geoserver](geoserver.org/download/)
 * [Download Qgis](http://www.qgis.org/)
 * [Leaflet](http://leafletjs.com)
