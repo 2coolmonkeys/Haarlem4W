@@ -6,8 +6,9 @@ Beschikbaar stellen opendata van, voor en over Haarlem.
 ## Inhoudsopgave
 
 * [Quick start](#quick-start)
-* [Burgerbegroting](#Burgerbegroting)
-* [Socialekaart](#Socialekaart)
+* [Burgerbegroting Apps](#Burgerbegroting)
+* [Socialekaart App](#Socialekaart)
+* [Over Haarlem](#Overhaarlem)
 
 
 ## Quick start
@@ -51,11 +52,23 @@ Enkele quick start punten:
 
 
  
-# Burgerbegroting
+# Burgerbegroting App
 
 
 Presentatie van projecten met projectbedrag op thematische wijze. Bij gebrek aan deze data, hebben we CBS data gebruikt.
 
-# Socialelekaart
+# Socialekaart App
 
 Socialekaart: plaatsen van meldingen op een kaart.
+
+# Over Haarlem
+
+* [Gemeente Bestuur](https://gemeentebestuur.haarlem.nl/Gemeentebestuur)
+* [Begroting](https://gemeentebestuur.haarlem.nl/bestuurlijke-stukken/financiele-stukken/begroting)
+* [Stadsdelen](https://www.haarlem.nl/stadsdelen/)
+
+
+# Overige bronnen
+
+* [https://data.gov.uk](https://data.gov.uk)
+* [https://www.data.gov](https://www.data.gov)
