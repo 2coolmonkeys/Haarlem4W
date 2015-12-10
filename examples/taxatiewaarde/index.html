@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Haarlem4W - Open Data & Leaflet example</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="//cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+  <style>
+   #map {
+     position: absolute;
+     top: 15px; left: 15px; right: 15px; bottom: 15px;
+   }
+   #chart-container {
+     width: 600px;
+     height: 400px;
+   }
+  </style>
+</head>
+<body>
+
+  <!-- Page contains only a single element to be filled with a map. -->
+  <div id="map"></div>
+
+  <!-- Include libraries: jQuery, Leaflet, Highcharts. -->
+  <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+  <script src="//cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+  <script src="//code.highcharts.com/highcharts.js"></script>
+
+  <!-- Define the specific content and interaction of this example. -->
+  <script>
+
+    // Location of Haarlem in latitude/longitude.
+    var haarlem_lat_lng = [52.383, 4.622];
+    var default_zoom = 13;
+
+
+    // Create a map on the <div id="map"></div> element.
+    var map = L.map('map').setView(haarlem_lat_lng, default_zoom);
+
+    // Add background map.
+    add_openstreetmap_background(map);
+
+
+    // Add the Haarlem WMS data.
+    // N.B. This does not request the actual data, but asks the server to
+    // draw us an image of the features.
+    var haarlem_wms = L.tileLayer.wms('https://wfs.haarlem.nl/ows', {
+      layers: 'taxatiewaarde',
+      format: 'image/png',
+      maxZoom: 18,
+      transparent: 'true',
+      attribution: '',
+      opacity: 0.5
+    }).addTo(map);
+
+   map.on('click', getFeatureInfo);
+
+
+
+  //  Add the freely available openstreetmap tile layer.
+  function add_openstreetmap_background(map) {
+    var _2cm = '<a href="http://www.2coolmonkeys.nl" target="_blank" style="font-weight:bold;"><span style="color:#454545;">2</span><span style="color:#4388c9;">Cool</span><span style="color:#454545;">Monkeys</span></a>';
+
+    L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors | ' + _2cm,
+      opacity: 1,
+      maxZoom: 18
+    }).addTo(map);
+  }
+
+
+  // Request information about the clicked location from the WMS server.
+  function getFeatureInfo(evt) {
+    var url = getFeatureInfoUrl(evt.latlng, haarlem_wms);
+
+    $.ajax({
+      url: url,
+      success: function (data, status, xhr) {
+        // Process the received data with the original location.
+        showGetFeatureInfo(data, evt.latlng);
+      },
+      error: function (xhr, status, error) {
+        console.log("getFeatureInfo error: "+error);
+      }
+    });
+  }
+
+
+  // Process requested popup feature information; show a popup.
+  function showGetFeatureInfo(data, latlng) {
+
+    // Skip non-object responses.
+    if (typeof data !== 'object') {
+      console.log('showGetFeatureInfo error: '+data);
+      return;
+    }
+
+    // Create popup with the content.
+    // TODO: make highchart.
+    var content = false;
+    if (data.features && data.features.length > 0) {
+      var properties = data.features[0].properties;
+
+      // Parse data specific to the taxatiewaarde featureinfo layer,
+      // and create data for use in the highcharts content in the popup.
+      var chart_data = {
+        name: properties['name'],
+        values: [
+          ['0-10k',      parseInt(properties['aant_0_10k'])],
+          ['10k-100k',   parseInt(properties['aant_10k_100k'])],
+          ['100k-150k',  parseInt(properties['aant_100k_150k'])],
+          ['150k-200k',  parseInt(properties['aant_150k_200k'])],
+          ['200k-250k',  parseInt(properties['aant_200k_250k'])],
+          ['250k-300k',  parseInt(properties['aant_250k_300k'])],
+          ['300k-400k',  parseInt(properties['aant_300k_400k'])],
+          ['400k-500k',  parseInt(properties['aant_400k_500k'])],
+          ['500k-750k',  parseInt(properties['aant_500k_750k'])],
+          ['750k-1000k', parseInt(properties['aant_750k_1000k'])],
+          ['1000k+',     parseInt(properties['aant_1000k_plus'])]
+        ],
+        oppervlakte: parseInt(properties['gem_oppervlakte']),
+        gemiddeldewoz: Math.floor(parseInt(properties['gem_wozwaarde']) / 1000)
+      };
+      content = '<div id="chart-container"></div>';
+      //content += '<pre>'+JSON.stringify(data.features[0].properties, null, 2)+'</pre>';
+    }
+    L.popup({ maxWidth: 600, maxHeight: 400})
+      .setLatLng(latlng)
+      .setContent(content ? content : 'Geen gegevens')
+      .openOn(map);
+
+    if (content) {
+      add_chart_to_popup(chart_data);
+    }
+  }
+
+
+  // Construct a GetFeatureInfo request URL given a point on the map and WMS.
+  function getFeatureInfoUrl(latlng, wms) {
+    var point = map.latLngToContainerPoint(latlng, map.getZoom());
+    var size = map.getSize();
+    var params = {
+      request: 'GetFeatureInfo',
+      service: 'WMS',
+      srs: 'EPSG:4326',
+      buffer: map.getZoom(),
+      info_format: 'application/json',
+      feature_count: '5',
+      styles: wms.wmsParams.styles,
+      transparent: wms.wmsParams.transparent,
+      version: wms.wmsParams.version,      
+      format: wms.wmsParams.format,
+      layers: 'taxatiewaarde',
+      query_layers: 'taxatiewaarde',
+      bbox: map.getBounds().toBBoxString(),
+      height: size.y,
+      width: size.x,
+      drilldown: true
+    };
+
+    // Add cql queries as cql_filter:
+    // params['cql_filter'] = '';
+
+    // Add requested point, fix x/y for 1.3.0.
+    params[params.version === '1.3.0' ? 'i' : 'x'] = point.x;
+    params[params.version === '1.3.0' ? 'j' : 'y'] = point.y;
+    
+    return wms._url + L.Util.getParamString(params, wms._url, true);
+  }
+
+
+  // Create Highcharts content, following a default highcharts demo.
+  function add_chart_to_popup(chart_data) {
+
+    $('#chart-container').highcharts({
+        chart: { type: 'column' },
+        title: { text: chart_data.name + ' : Taxatiewaarde' },
+        subtitle: { text: 'Gemiddelde WOZ: <strong>'+chart_data.gemiddeldewoz+'K</strong><br>Gemiddeld woonoppervlak: <strong>'+chart_data.oppervlakte+'m2</strong><br>Bron: <a href="https://opendata.haarlem.nl/public/portal.html#13/52.3819/4.6290">Haarlem Open Data</a>' },
+
+        xAxis: {
+            type: 'category',
+            title: { text: 'Taxatiewaarde' },
+            labels: {
+                rotation: -45,
+                style: {
+                    fontSize: '13px',
+                    fontFamily: 'Verdana, sans-serif'
+                }
+            }
+        },
+        yAxis: {
+            min: 0,
+            title: { text: 'Aantal huishoudens' }
+        },
+        legend: {
+            enabled: false
+        },
+        tooltip: {
+            pointFormat: 'Aantal huishouden met deze taxatiewaarde: <b>{point.y}</b>'
+        },
+        series: [{
+            name: 'Taxatiewaarde',
+            data: chart_data.values,
+            dataLabels: {
+                enabled: true,
+                rotation: -90,
+                color: '#FFFFFF',
+                align: 'right',
+                format: '{point.y}',
+                y: -10, // -10 pixels down from the top
+                style: {
+                    fontSize: '13px',
+                    fontFamily: 'Verdana, sans-serif'
+                }
+            }
+        }]
+    });
+  }
+  </script>
+</body>
+</html>
