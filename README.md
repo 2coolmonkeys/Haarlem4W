@@ -56,7 +56,7 @@ Enkele quick start punten:
 Presentatie van projecten met projectbedrag op thematische wijze. Bij gebrek aan deze data, hebben we CBS data gebruikt.
 
 Voorbeeld 1: Taxatiewaarde vanuit de HaarlemOpen WMS (via RawGit):
-[examples/taxatiewaarde/](https://rawgit.com/2coolmonkeys/Haarlem4W/master/examples/taxatiewaarde/index.html)
+[examples/taxatiewaarde/](http://rawgit.com/2coolmonkeys/Haarlem4W/master/examples/taxatiewaarde/index.html)
 
 # Socialelekaart
 
