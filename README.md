@@ -61,13 +61,16 @@ Presentatie van projecten met projectbedrag op thematische wijze. Bij gebrek aan
 Voorbeeld 1: Taxatiewaarde vanuit de HaarlemOpen WMS (via RawGit):
 [examples/taxatiewaarde/](http://rawgit.com/2coolmonkeys/Haarlem4W/master/examples/taxatiewaarde/index.html)
  
-Voorbeeld 2: Meerdere lagen uit meerdere bronnen combineren.
+Voorbeeld 2: Meerdere lagen uit meerdere bronnen combineren:
 [examples/meerderelagen/](http://rawgit.com/2coolmonkeys/Haarlem4W/master/examples/meerderelagen/index.html)
 
 
 # Socialekaart App
 
 Socialekaart: plaatsen van meldingen op een kaart.
+ 
+Voorbeeld 3: Bericht achterlaten op de kaart (zonder backend dus alleen in het scherm):
+[examples/berichten/](http://rawgit.com/2coolmonkeys/Haarlem4W/master/examples/berichten/index.html)
 
 # Over Haarlem
 
