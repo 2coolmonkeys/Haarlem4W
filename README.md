@@ -60,6 +60,9 @@ Presentatie van projecten met projectbedrag op thematische wijze. Bij gebrek aan
  
 Voorbeeld 1: Taxatiewaarde vanuit de HaarlemOpen WMS (via RawGit):
 [examples/taxatiewaarde/](http://rawgit.com/2coolmonkeys/Haarlem4W/master/examples/taxatiewaarde/index.html)
+ 
+Voorbeeld 2: Meerdere lagen uit meerdere bronnen combineren.
+[examples/meerderelagen/](http://rawgit.com/2coolmonkeys/Haarlem4W/master/examples/meerderelagen/index.html)
 
 
 # Socialekaart App
