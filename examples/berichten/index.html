@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Haarlem4W - Open Data & Leaflet example</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="//cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+  <style>
+   #map {
+     position: absolute;
+     top: 15px; left: 15px; right: 15px; bottom: 15px;
+   }
+   #logo-locatielab {
+     position: absolute;
+     bottom: 15px; left: 20px;
+   }
+   #chart-container {
+     width: 600px;
+     height: 400px;
+   }
+  </style>
+</head>
+<body>
+
+  <!-- Page contains only a single element to be filled with a map. -->
+  <div id="map"></div>
+
+  <div id="logo-locatielab"><img src="../img/locatielab.png"></div>
+
+  <!-- Include libraries: jQuery, Leaflet, Highcharts. -->
+  <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+  <script src="//cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+  <script src="//code.highcharts.com/highcharts.js"></script>
+
+  <!-- Define the specific content and interaction of this example. -->
+  <script>
+
+    // Location of Haarlem in latitude/longitude.
+    var haarlem_lat_lng = [52.383, 4.622];
+    var default_zoom = 13;
+
+
+    // Create a map on the <div id="map"></div> element.
+    var map = L.map('map').setView(haarlem_lat_lng, default_zoom);
+
+    // Add background map.
+    add_openstreetmap_background(map);
+
+
+    // Add the Haarlem WMS data.
+    // N.B. This does not request the actual data, but asks the server to
+    // draw us an image of the features.
+    var haarlem_wms = L.tileLayer.wms('https://wfs.haarlem.nl/ows', {
+      layers: 'taxatiewaarde',
+      format: 'image/png',
+      transparent: 'true',
+      attribution: 'Haarlem Open',
+      opacity: 0.5
+   }).addTo(map);
+
+    map.on('click', leave_message);
+
+    var latest_latlng = null;
+    var input_popup = null;
+
+    function leave_message(e) {
+      latest_latlng = e.latlng;
+      input_popup = L.popup()
+      .setLatLng(e.latlng)
+      .setContent('Laat een bericht achter:<br><textarea id="leave-message-text"></textarea><br><button id="leave-message-button" onclick="store_message();">Verstuur</button><br><span style="color:#aaa;">N.B. De berichten worden nu alleen in het huidige scherm opgeslagen.</span>')
+      .openOn(map);
+    }
+
+    function store_message() {
+      L.marker(latest_latlng).addTo(map).bindPopup($('#leave-message-text').val());
+      console.log(input_popup);
+      input_popup._close();
+    }
+
+    //  Add the freely available openstreetmap tile layer.
+    function add_openstreetmap_background(map) {
+      var _2cm = '<a href="http://www.2coolmonkeys.nl" target="_blank" style="font-weight:bold;"><span style="color:#454545;">2</span><span style="color:#4388c9;">Cool</span><span style="color:#454545;">Monkeys</span></a>';
+
+      L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors | ' + _2cm,
+        opacity: 1,
+        maxZoom: 18
+      }).addTo(map);
+    }
+  </script>
+</body>
+</html>
