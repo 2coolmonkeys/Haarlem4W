@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Haarlem4W - Open Data & Leaflet example</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="//cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+  <style>
+   #map {
+     position: absolute;
+     top: 15px; left: 15px; right: 15px; bottom: 15px;
+   }
+   #logo-locatielab {
+     position: absolute;
+     bottom: 15px; left: 20px;
+   }
+   .leaflet-popup-content {
+     overflow: scroll;
+   }
+  </style>
+</head>
+<body>
+
+  <!-- Page contains only a single element to be filled with a map. -->
+  <div id="map"></div>
+
+  <div id="logo-locatielab"><img src="../img/locatielab.png"></div>
+
+  <!-- Include libraries: jQuery, Leaflet, Highcharts. -->
+  <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+  <script src="//cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+
+  <!-- Use BetterWMS for basic feature info retrieval, see:
+       https://gist.github.com/rclark/6908938 -->
+  <script src="L.TileLayer.BetterWMS.js"></script>
+
+
+  <!-- Define the specific content and interaction of this example. -->
+  <script>
+
+    // Location of Haarlem in latitude/longitude.
+    var haarlem_lat_lng = [52.383, 4.622];
+    var default_zoom = 13;
+
+    // Get background maps.
+    var base_maps = base_maps();
+
+    var data_maps = {
+      'Kadaster Koopsom': L.tileLayer.betterWms('http://geo.2coolmonkeys.nl/smartcityapp/wms', {
+        layers: 'smartcityapp:pc4koopsom',
+        format: 'image/png',
+        transparent: true,
+        info_format:'text/html',
+        opacity:0.3,
+        attribution: 'Kadaster'}),
+
+      'Haarlem Taxatie':  L.tileLayer.betterWms('https://wfs.haarlem.nl/ows', {
+        layers: 'taxatiewaarde',
+        format: 'image/png',
+        transparent: 'true',
+        opacity: 0.7,
+        attribution: 'Haarlem'}),
+
+      'MinBZK Leefbaarometer':  L.tileLayer.betterWms('http://services.geodan.nl/public/data/ows/MBIZ4280LEEF/org/wms', {
+        layers: 'schaalafhankelijke_leefbaarheidskaart',
+        format: 'image/png',
+        transparent: 'true',
+        opacity: 0.7,
+        attribution: 'MinBZK'}),
+    };
+
+
+    // Create a map on the <div id="map"></div> element.
+    var map = L.map('map', {
+      center: haarlem_lat_lng,
+      zoom: default_zoom,
+      layers: [base_maps['OpenStreetMap'], data_maps['Kadaster Koopsom']]
+    });
+
+
+    // Add default layer-picker to the top-right corner.
+    L.control.layers(base_maps, data_maps).addTo(map);
+
+
+    // Define the freely available openstreetmaps and stamen backgrounds.
+    function base_maps() {
+      var attr_2cm = '<a href="http://www.2coolmonkeys.nl" target="_blank" style="font-weight:bold;"><span style="color:#454545;">2</span><span style="color:#4388c9;">Cool</span><span style="color:#454545;">Monkeys</span></a>';
+      var attr_osm = '&copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors';
+      var attr_stamen = '<a href="http://stamen.com">Stamen</a>';
+
+      var base_maps = {
+        'OpenStreetMap': L.tileLayer(
+          'http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+          attribution: attr_osm + ' | ' + attr_2cm}),
+
+        'StedenWit': L.tileLayer(
+          'http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png', {
+          attribution: attr_stamen + ' | ' + attr_2cm}),
+      }
+
+      return base_maps;
+    }
+  </script>
+</body>
+</html>
